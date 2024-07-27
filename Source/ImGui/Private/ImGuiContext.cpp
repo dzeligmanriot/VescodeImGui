@@ -455,6 +455,34 @@ FImGuiContext::operator ImPlotContext*() const
 	return PlotContext;
 }
 
+bool FImGuiContext::IsInputProcessorActive()
+{
+	const FImGuiViewportData* MainViewportData = FImGuiViewportData::GetOrCreate(ImGui::GetMainViewport());
+	if (MainViewportData != nullptr && MainViewportData->Overlay.IsValid())
+	{
+		return MainViewportData->Overlay.Pin().Get()->IsInputProcessorActive();
+	}
+	return false;
+}
+
+void FImGuiContext::RegisterInputProcessor()
+{
+	const FImGuiViewportData* MainViewportData = FImGuiViewportData::GetOrCreate(ImGui::GetMainViewport());
+	if (MainViewportData != nullptr && MainViewportData->Overlay.IsValid())
+	{
+		MainViewportData->Overlay.Pin().Get()->RegisterInputProcessor();
+	}
+}
+
+void FImGuiContext::UnRegisterInputProcessor()
+{
+	const FImGuiViewportData* MainViewportData = FImGuiViewportData::GetOrCreate(ImGui::GetMainViewport());
+	if (MainViewportData != nullptr && MainViewportData->Overlay.IsValid())
+	{
+		MainViewportData->Overlay.Pin().Get()->UnRegisterInputProcessor();
+	}
+}
+
 void FImGuiContext::OnDisplayMetricsChanged(const FDisplayMetrics& DisplayMetrics)
 {
 	ImGui::FScopedContext ScopedContext(AsShared());
