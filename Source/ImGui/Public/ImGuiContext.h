@@ -56,6 +56,10 @@ public:
 	/// Access to the underlying ImPlot context
 	operator ImPlotContext*() const;
 
+	static bool IsInputProcessorActive();
+	static void RegisterInputProcessor();
+	static void UnRegisterInputProcessor();
+
 private:
 	void Initialize();
 
