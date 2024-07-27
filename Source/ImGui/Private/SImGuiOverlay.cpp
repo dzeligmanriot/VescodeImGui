@@ -266,16 +266,38 @@ void SImGuiOverlay::Construct(const FArguments& Args)
 	if (Args._HandleInput)
 	{
 		InputProcessor = MakeShared<FImGuiInputProcessor>(this);
-		FSlateApplication::Get().RegisterInputPreProcessor(InputProcessor.ToSharedRef(), 0);
+		RegisterInputProcessor();
 	}
 }
 
 SImGuiOverlay::~SImGuiOverlay()
 {
-	if (FSlateApplication::IsInitialized() && InputProcessor.IsValid())
+	UnRegisterInputProcessor();
+}
+
+void SImGuiOverlay::RegisterInputProcessor()
+{
+	if (InputProcessor.IsValid() && FSlateApplication::Get().FindInputPreProcessor(InputProcessor) == INDEX_NONE)
+	{
+		FSlateApplication::Get().RegisterInputPreProcessor(InputProcessor.ToSharedRef());
+	}
+}
+
+void SImGuiOverlay::UnRegisterInputProcessor()
+{
+	if (IsInputProcessorActive())
 	{
 		FSlateApplication::Get().UnregisterInputPreProcessor(InputProcessor);
 	}
+}
+
+bool SImGuiOverlay::IsInputProcessorActive() const
+{
+	if (FSlateApplication::IsInitialized() && InputProcessor.IsValid() && FSlateApplication::Get().FindInputPreProcessor(InputProcessor) != INDEX_NONE)
+	{
+		return true;
+	}
+	return false;
 }
 
 int32 SImGuiOverlay::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const
